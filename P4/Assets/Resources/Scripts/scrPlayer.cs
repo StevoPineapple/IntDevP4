@@ -11,11 +11,15 @@ public class scrPlayer : MonoBehaviour
     private float selfAngle;
     private Vector3 mousePos;
     private Camera mainCam;
-    private float moveSpd = 3.0f;
+    private float moveSpd = 8.0f; //Add soft speed 
     public float deltaAngle;
+    public int numOfDiamond;
+    float scrollSpeed = 0.3f;
+    Renderer rend;
 
     void Start()
     {
+        rend = GetComponent<Renderer> ();
         selfBody = gameObject.GetComponent<Rigidbody2D>();
         selfPos = gameObject.transform.position;
         sprRenderer = gameObject.GetComponent<SpriteRenderer>();
@@ -52,6 +56,8 @@ public class scrPlayer : MonoBehaviour
     }
     void FixedUpdate()
     {
+        float offset = Time.time * scrollSpeed;
+        rend.material.SetTextureOffset("_MainTex", new Vector2(offset, 0));
         keyMove();
         HandleMovement();
     }

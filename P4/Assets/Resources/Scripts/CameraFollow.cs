@@ -15,7 +15,8 @@ public class CameraFollow : MonoBehaviour
     float camY;
     float camXFull;
     float camYFull;
-    float camWidth;
+    float camWidthZoom;
+    float camWidthFull; //this is half of the entire width
     float camSizeFull;
     float camSizeZoom;
     float camChangeSize;
@@ -28,14 +29,17 @@ public class CameraFollow : MonoBehaviour
 
     public string camMode;
     public bool isChanging;
+
+    SpriteRenderer fogRend;
     # endregion
     void Start()
     {
+        fogRend = GameObject.Find("objFog").GetComponent<SpriteRenderer>(); //not universal
         isChanging = false;
         camXFull = gameObject.transform.position.x;
         camYFull = gameObject.transform.position.y;
         camChangeSize = 9999.0f; //Temp value
-        camChangeSpeed = 60.0f;
+        camChangeSpeed = 40.0f;
         followTransform = GameObject.Find("objPlayer").transform;
         worldName = "objWorldOutside";
         worldBounds = GameObject.Find(worldName).GetComponent<BoxCollider2D>();
@@ -45,12 +49,12 @@ public class CameraFollow : MonoBehaviour
         xMax = worldBounds.bounds.max.x;
         yMax = worldBounds.bounds.max.y;
         mainCam = gameObject.GetComponent<Camera>();
-        isChanging = true;
+        //isChanging = true;
         camSizeFull = mainCam.orthographicSize;
-        camSizeZoom = 4.0f;
-        camWidth = mainCam.aspect*camSizeZoom;
-        smoothRate = 0.2f;
-        Debug.Log("UNITYYOUSTUPIDPIECEOF");
+        camSizeZoom = 8.5f;
+        camWidthZoom = mainCam.aspect*camSizeZoom;
+        camWidthFull = mainCam.aspect*camSizeFull;
+        smoothRate = 0.5f;
     }
 
     public void startChanging(string mode, string newWorld)
@@ -72,53 +76,69 @@ public class CameraFollow : MonoBehaviour
         //Debug.Log(camSizeZoom);
         //Debug.Log("camSizeZoom");
         //Debug.Log(camSizeZoom);
-                            camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeZoom,yMax-camSizeZoom);
-                    camX = Mathf.Clamp(followTransform.position.x,xMin+camWidth,xMax-camWidth);
-                    smoothPos = Vector3.Lerp(gameObject.transform.position,new Vector3(camX,camY,gameObject.transform.position.z),smoothRate);
-                    gameObject.transform.position = smoothPos;
+        if(camMode == "Zoom"){
+            camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeZoom,yMax-camSizeZoom);
+            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthZoom,xMax-camWidthZoom);}
+        else{
+            camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeFull,yMax-camSizeFull);
+            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthFull,xMax-camWidthFull);}
+        smoothPos = Vector3.Lerp(gameObject.transform.position,new Vector3(camX,camY,gameObject.transform.position.z),smoothRate);
+        gameObject.transform.position = smoothPos;
         if(isChanging)
         {
             //camSizeZoom = followTransform.position.y;
             //mainCam.orthographicSize = camSizeZoom;
             //camRatio = (xMax+camSizeFull)/800000000.0f;
             switch(camMode){
-                case "Zoom":
+                case "Zoom": //TO ZOOM
                 { 
-                    Debug.Log(camChangeSize == 9999.0f);
-                    if(camChangeSize == 9999.0f)//ZOOM TO ZOOM
+                    if(camChangeSize == 9999.0f)//calc size
                     {
-                        Debug.Log("FUCKYOUUNITY");
                         camChangeSize = (mainCam.orthographicSize-camSizeZoom)/camChangeSpeed;
-                        Debug.Log(camChangeSize);
                     }
-                    if(mainCam.orthographicSize>camSizeZoom)
+                    if(mainCam.orthographicSize>camSizeZoom)//Changing
+                    {
                         mainCam.orthographicSize-=camChangeSize;
-                    else
+                        fogRend.color = new Color(fogRend.color.r,fogRend.color.g,fogRend.color.b,
+                        fogRend.color.a+1.0f/camChangeSpeed);
+                    }
+                    else //Finished
                     {
                         isChanging = false;
                         camChangeSize = 9999.0f;
                         mainCam.orthographicSize = camSizeZoom;
+                        fogRend.color = new Color(fogRend.color.r,fogRend.color.g,fogRend.color.b,1.0f);
                     }
                     break;
                 }
                 case "Full":
                 {
-                    if(camChangeSize == 9999.0f)//ZOOM TO FULL this is not efficient
+                    if(camChangeSize == 9999.0f)//ZOOM TO FULL this is not efficient FIRST TIME
+                    {
+                        camSizeFull = Mathf.Abs((yMax-yMin)/2);
+                        camWidthFull = mainCam.aspect*camSizeFull;
                         camChangeSize = (camSizeFull-mainCam.orthographicSize)/camChangeSpeed;
+                        camXFull = worldBounds.gameObject.transform.position.x;
+                        camYFull = worldBounds.gameObject.transform.position.y;
+                    }
                     if(mainCam.orthographicSize<camSizeFull)
                     {
                         mainCam.orthographicSize+=camChangeSize;
-                        camWidth = mainCam.aspect*mainCam.orthographicSize;
+                        camWidthFull = mainCam.aspect*mainCam.orthographicSize;
                         camY = Mathf.Clamp(followTransform.position.y,yMin+mainCam.orthographicSize,yMax-mainCam.orthographicSize);
-                        camX = Mathf.Clamp(followTransform.position.x,xMin+camWidth,xMax-camWidth);
+                        camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthFull,xMax-camWidthFull);
                         smoothPos = Vector3.Lerp(gameObject.transform.position,new Vector3(camX,camY,gameObject.transform.position.z),smoothRate);
                         gameObject.transform.position = smoothPos;
+                        fogRend.color = new Color(fogRend.color.r,fogRend.color.g,fogRend.color.b,
+                        fogRend.color.a-1.0f/camChangeSpeed);
                     }
                     else
                     {
-                        gameObject.transform.position = new Vector3(camXFull,camYFull,gameObject.transform.position.z);
+                        isChanging = false;
+                        //gameObject.transform.position = new Vector3(camXFull,camYFull,gameObject.transform.position.z);
                         camChangeSize = 9999.0f;
                         mainCam.orthographicSize = camSizeFull;
+                        fogRend.color = new Color(fogRend.color.r,fogRend.color.g,fogRend.color.b,0.0f);
                     }
                 }
                 break;
