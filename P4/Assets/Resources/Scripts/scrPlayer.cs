@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +11,12 @@ public class scrPlayer : MonoBehaviour
     private float selfAngle;
     private Vector3 mousePos;
     private Camera mainCam;
-    private float moveSpd = 8.0f; //Add soft speed 
+    private float moveSpd = 9.0f; //Add soft speed 
     public float deltaAngle;
     public int numOfDiamond;
-    float scrollSpeed = 0.3f;
+    float moveSmoothRate = 0.2f;
+    float turnSmoothRate = 0.7f;
+    float scrollSpeed = 0.35f;
     Renderer rend;
 
     void Start()
@@ -31,7 +33,8 @@ public class scrPlayer : MonoBehaviour
     {
         selfPos = gameObject.transform.position;
         mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
-        selfAngle = getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x);
+        //Debug.Log(getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x)); //Glith
+        selfAngle = Mathf.Lerp(selfAngle,getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x),turnSmoothRate);
         transform.rotation = Quaternion.Euler(0,0,selfAngle);  
 
         if(Input.GetKey(KeyCode.W))
@@ -51,7 +54,7 @@ public class scrPlayer : MonoBehaviour
 
     void HandleMovement()
     {
-        selfBody.velocity = currVelocity;
+        selfBody.velocity = Vector3.Lerp(selfBody.velocity,currVelocity,moveSmoothRate);
         currVelocity = new Vector3(0,0,0);
     }
     void FixedUpdate()
