@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: matWall
+  m_Name: matTiling
   m_Shader: {fileID: -6465566751694194690, guid: 52dc3bfd3b1fca146af1a355e4c4f181,
     type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA

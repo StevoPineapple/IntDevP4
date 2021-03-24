@@ -7,8 +7,11 @@ public class scrFog : MonoBehaviour
     float camPosX;
     float camPosY;
     float camScale;
+    float scrollSpeed = -0.005f;
+    Renderer rend;
     void Start()
     {
+        rend = GetComponent<Renderer> ();
         camScale = Camera.main.orthographicSize;
         gameObject.GetComponent<SpriteRenderer>().color = 
         new Color(gameObject.GetComponent<SpriteRenderer>().color.r,
@@ -19,6 +22,8 @@ public class scrFog : MonoBehaviour
 
     void FixedUpdate()
     {
+        float offset = Time.time * scrollSpeed;
+        rend.material.SetFloat("_Speed", offset);
         camPosX = Camera.main.transform.position.x;
         camPosY = Camera.main.transform.position.y;
         gameObject.transform.position = new Vector3(camPosX,camPosY,gameObject.transform.position.z);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class scrWall : MonoBehaviour
+public class scrWallOld : MonoBehaviour
 {
     float scrollSpeed = 0.02f;
     float originalSize = 3.0f;
@@ -39,13 +39,21 @@ public class scrWall : MonoBehaviour
     }
     void Update()
     {
-        //Transform[] selfTrans = gameObject.transform.GetChild();
         if(gameObject.tag == "debug")
         {
-            Debug.Log(-gameObject.transform.localEulerAngles.z);
+            //Debug.Log(gameObject.transform.localScale.y/originalSize);
             
-        //Debug.Log("Z:"+gameObject.GetComponent<BoxCollider2D>().bounds.min.x);
+        Debug.Log("Z:"+gameObject.GetComponent<BoxCollider2D>().bounds.min.x);
         
+        /*rend.material.SetVector("_Tiling", new Vector4(
+            gameObject.transform.GetChild(1).transform.localScale.x/originalSize,
+            gameObject.transform.GetChild(1).transform.localScale.y/originalSize,0,0));
+        rend.material.SetVector("_Offset", new Vector4(
+            gameObject.transform.GetChild(0).GetComponent<BoxCollider2D>().bounds.max.x % halfsize / halfsize * 0.5f,
+            gameObject.transform.GetChild(0).GetComponent<BoxCollider2D>().bounds.max.y % halfsize / halfsize * 0.5f,
+            0,0));
+        rend.material.SetFloat("_Rotate", -gameObject.transform.GetChild(1).transform.localEulerAngles.z);
+        }*/
         rend.material.SetVector("_Tiling", new Vector4(
             gameObject.transform.localScale.x/originalSize,
             gameObject.transform.localScale.y/originalSize,0,0));

@@ -9,14 +9,16 @@ public class scrChangeCam : MonoBehaviour
     public GameObject toWorld;
     bool stepped = false;
     GameObject objPlayer;
+    float reactivateDis = 0.0f;
     void Start()
     {
         
     }
     void FixedUpdate()
     {
-        if(Mathf.Abs(objPlayer.transform.position.x-gameObject.transform.position.x)>5.0f||
-        Mathf.Abs(objPlayer.transform.position.y-gameObject.transform.position.y)>5.0f)
+        
+        if(Mathf.Abs(objPlayer.transform.position.x-gameObject.transform.position.x)>reactivateDis||
+        Mathf.Abs(objPlayer.transform.position.y-gameObject.transform.position.y)>reactivateDis)
         {
             stepped = false;
         }

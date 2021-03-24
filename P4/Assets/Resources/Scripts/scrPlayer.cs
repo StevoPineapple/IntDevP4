@@ -15,7 +15,7 @@ public class scrPlayer : MonoBehaviour
     public float deltaAngle;
     public int numOfDiamond;
     float moveSmoothRate = 0.2f;
-    float turnSmoothRate = 0.7f;
+    //float turnSmoothRate = 0.7f;
     float scrollSpeed = 0.35f;
     Renderer rend;
 
@@ -31,10 +31,17 @@ public class scrPlayer : MonoBehaviour
 
     void keyMove()
     {
+        //float adjAngle;
         selfPos = gameObject.transform.position;
-        mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
-        //Debug.Log(getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x)); //Glith
-        selfAngle = Mathf.Lerp(selfAngle,getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x),turnSmoothRate);
+        mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition); //Glith
+        /*adjAngle = getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x);
+        Debug.Log(adjAngle);
+        if(adjAngle<0){
+            adjAngle=-adjAngle;
+            adjAngle=180-adjAngle;
+            adjAngle=adjAngle+180;
+        }*/
+        selfAngle = getAngle(selfPos.y-mousePos.y,selfPos.x-mousePos.x);//Mathf.Lerp(selfAngle,adjAngle,turnSmoothRate);
         transform.rotation = Quaternion.Euler(0,0,selfAngle);  
 
         if(Input.GetKey(KeyCode.W))
@@ -59,9 +66,20 @@ public class scrPlayer : MonoBehaviour
     }
     void FixedUpdate()
     {
-        float offset = Time.time * scrollSpeed;
-        rend.material.SetTextureOffset("_MainTex", new Vector2(offset, 0));
         keyMove();
+        //Debug.Log(gameObject.GetComponent<BoxCollider2D>().bounds.max.x);
+        //Debug.Log();
+        //rend.material.SetVector("_Tiling", new Vector4(
+        //    gameObject.transform.localScale.x/originalSize,
+        //    gameObject.transform.localScale.y/originalSize,0,0));
+        rend.material.SetVector("_Offset", new Vector4(
+            (gameObject.transform.position.x-gameObject.GetComponent<CircleCollider2D>().radius  % 1.5f) / 1.5f * 0.5f,
+            (gameObject.transform.position.y-gameObject.GetComponent<CircleCollider2D>().radius % 1.5f) / 1.5f * 0.5f,
+            0,0));
+        rend.material.SetFloat("_Rotate", -selfAngle);
+        float offset = Time.time * scrollSpeed;
+        rend.material.SetFloat("_Speed", offset);
+        
         HandleMovement();
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     #region vars
+    public Vector3 mouseClampPos;
     public Transform followTransform;
     BoxCollider2D worldBounds;
     float xMin;
@@ -18,11 +19,11 @@ public class CameraFollow : MonoBehaviour
     float camWidthZoom;
     float camWidthFull; //this is half of the entire width
     float camSizeFull;
-    float camSizeZoom;
-    float camChangeSize;
-    float camChangeSpeed;
+    float camSizeZoom = 8.5f;
+    float camChangeSize = 9999.0f;
+    float camChangeSpeed = 40.0f;
     Vector3 smoothPos;
-    public float smoothRate;
+    float smoothRate = 0.6f;
     Camera mainCam;
 
     public string worldName;
@@ -30,6 +31,9 @@ public class CameraFollow : MonoBehaviour
     public string camMode;
     public bool isChanging;
 
+    Vector3 mousePos;
+    float mouseOffsetRadius = 0.75f;
+    float mouseOffsetRate = 4.5f;
     SpriteRenderer fogRend;
     # endregion
     void Start()
@@ -38,8 +42,6 @@ public class CameraFollow : MonoBehaviour
         isChanging = false;
         camXFull = gameObject.transform.position.x;
         camYFull = gameObject.transform.position.y;
-        camChangeSize = 9999.0f; //Temp value
-        camChangeSpeed = 40.0f;
         followTransform = GameObject.Find("objPlayer").transform;
         worldName = "objWorldOutside";
         worldBounds = GameObject.Find(worldName).GetComponent<BoxCollider2D>();
@@ -51,10 +53,8 @@ public class CameraFollow : MonoBehaviour
         mainCam = gameObject.GetComponent<Camera>();
         //isChanging = true;
         camSizeFull = mainCam.orthographicSize;
-        camSizeZoom = 8.5f;
         camWidthZoom = mainCam.aspect*camSizeZoom;
         camWidthFull = mainCam.aspect*camSizeFull;
-        smoothRate = 0.5f;
     }
 
     public void startChanging(string mode, string newWorld)
@@ -71,19 +71,41 @@ public class CameraFollow : MonoBehaviour
         yMax = worldBounds.bounds.max.y;
     }
     
+    void OnDrawGizmosSelected()
+    {
+        //Vector3 initialPos;
+        // Draw a yellow sphere at the transform's position
+        //mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+        //var allowedPos = mousePos - initialPos;
+        //mousePos = Vector3.ClampMagnitude(mousePos, mouseOffsetRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(-Vector3.ClampMagnitude(followTransform.position-mainCam.ScreenToWorldPoint(Input.mousePosition),mouseOffsetRadius),0.3f);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(mainCam.ScreenToWorldPoint(Input.mousePosition),0.3f);
+
+    }
+
     void FixedUpdate()
     {
         //Debug.Log(camSizeZoom);
         //Debug.Log("camSizeZoom");
         //Debug.Log(camSizeZoom);
-        if(camMode == "Zoom"){
+        if(camMode == "Zoom")
+        { 
+            mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+            mousePos = -Vector3.ClampMagnitude(followTransform.position-mousePos,mouseOffsetRadius);
             camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeZoom,yMax-camSizeZoom);
-            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthZoom,xMax-camWidthZoom);}
-        else{
+            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthZoom,xMax-camWidthZoom);
+            mouseClampPos = new Vector3(camX+mousePos.x*mouseOffsetRate,
+                    camY+mousePos.y*mouseOffsetRate,
+                    gameObject.transform.position.z);
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,mouseClampPos,smoothRate);
+        }
+        else
+        {
             camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeFull,yMax-camSizeFull);
-            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthFull,xMax-camWidthFull);}
-        smoothPos = Vector3.Lerp(gameObject.transform.position,new Vector3(camX,camY,gameObject.transform.position.z),smoothRate);
-        gameObject.transform.position = smoothPos;
+            camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthFull,xMax-camWidthFull);
+        }
         if(isChanging)
         {
             //camSizeZoom = followTransform.position.y;
