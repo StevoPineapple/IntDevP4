@@ -5,7 +5,7 @@ using UnityEngine;
 public class scrWall : MonoBehaviour
 {
     float scrollSpeed = 0.02f;
-    float originalSize = 3.0f;
+    float originalSize = 3f;
     float halfsize;
 
     Renderer rend;
@@ -40,9 +40,9 @@ public class scrWall : MonoBehaviour
     void Update()
     {
         //Transform[] selfTrans = gameObject.transform.GetChild();
-        if(gameObject.tag == "debug")
+        if(gameObject.tag != "debug")
         {
-            Debug.Log(-gameObject.transform.localEulerAngles.z);
+            //Debug.Log(-gameObject.transform.localEulerAngles.z);
             
         //Debug.Log("Z:"+gameObject.GetComponent<BoxCollider2D>().bounds.min.x);
         
@@ -50,8 +50,8 @@ public class scrWall : MonoBehaviour
             gameObject.transform.localScale.x/originalSize,
             gameObject.transform.localScale.y/originalSize,0,0));
         rend.material.SetVector("_Offset", new Vector4(
-            gameObject.transform.position.x % halfsize / halfsize * 0.5f,
-            gameObject.transform.position.y % halfsize / halfsize * 0.5f,
+            (gameObject.transform.position.x-Camera.main.transform.position.x) % halfsize / halfsize * 0.5f,
+            (gameObject.transform.position.y-Camera.main.transform.position.y) % halfsize / halfsize * 0.5f,
             0,0));
         rend.material.SetFloat("_Rotate", -gameObject.transform.localEulerAngles.z);
         }

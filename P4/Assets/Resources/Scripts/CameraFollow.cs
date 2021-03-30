@@ -18,8 +18,8 @@ public class CameraFollow : MonoBehaviour
     float camYFull;
     float camWidthZoom;
     float camWidthFull; //this is half of the entire width
-    float camSizeFull;
-    float camSizeZoom = 8.5f;
+    public float camSizeFull;
+    public float camSizeZoom = 8.5f;
     float camChangeSize = 9999.0f;
     float camChangeSpeed = 40.0f;
     Vector3 smoothPos;
@@ -96,8 +96,8 @@ public class CameraFollow : MonoBehaviour
             mousePos = -Vector3.ClampMagnitude(followTransform.position-mousePos,mouseOffsetRadius);
             camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeZoom,yMax-camSizeZoom);
             camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthZoom,xMax-camWidthZoom);
-            mouseClampPos = new Vector3(camX+mousePos.x*mouseOffsetRate,
-                    camY+mousePos.y*mouseOffsetRate,
+            mouseClampPos = new Vector3(camX+mousePos.x*mouseOffsetRate*((Camera.main.orthographicSize/camSizeZoom)+0.01f),
+                    camY+mousePos.y*mouseOffsetRate*((Camera.main.orthographicSize/camSizeZoom)+0.01f),
                     gameObject.transform.position.z);
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,mouseClampPos,smoothRate);
         }
@@ -105,6 +105,8 @@ public class CameraFollow : MonoBehaviour
         {
             camY = Mathf.Clamp(followTransform.position.y,yMin+camSizeFull,yMax-camSizeFull);
             camX = Mathf.Clamp(followTransform.position.x,xMin+camWidthFull,xMax-camWidthFull);
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,
+                new Vector3(camX,camY,gameObject.transform.position.z),smoothRate);
         }
         if(isChanging)
         {

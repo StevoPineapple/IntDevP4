@@ -7,26 +7,26 @@ public class scrChangeCam : MonoBehaviour
     public bool toZoom;
     public bool toFull;
     public GameObject toWorld;
-    bool stepped = false;
+    //bool stepped = false;
     GameObject objPlayer;
-    float reactivateDis = 0.0f;
+    //float reactivateDis = 0.0f;
     void Start()
     {
-        
+        //objPlayer
     }
     void FixedUpdate()
     {
         
-        if(Mathf.Abs(objPlayer.transform.position.x-gameObject.transform.position.x)>reactivateDis||
-        Mathf.Abs(objPlayer.transform.position.y-gameObject.transform.position.y)>reactivateDis)
-        {
-            stepped = false;
-        }
+        //if(Mathf.Abs(objPlayer.transform.position.x-gameObject.transform.position.x)>reactivateDis||
+        //Mathf.Abs(objPlayer.transform.position.y-gameObject.transform.position.y)>reactivateDis)
+        //{
+        //    stepped = false;
+        //}
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(!stepped)
-        {
+        //if(!stepped)
+        //{
             if(other.gameObject.name == "objPlayer")
             {
                 objPlayer = other.gameObject;
@@ -35,8 +35,8 @@ public class scrChangeCam : MonoBehaviour
                     mainCam.startChanging("Zoom",toWorld.name);
                 else
                     mainCam.startChanging("Full",toWorld.name);
-                stepped = true;
+                //stepped = true;
             }
-        }
+        //}
     }
 }

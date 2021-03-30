@@ -7,6 +7,10 @@ TagManager:
   - Walls
   - following
   - debug
+  - WallsS
+  - WallsRS
+  - Eyes
+  - Memtext
   layers:
   - Default
   - TransparentFX
@@ -17,9 +21,9 @@ TagManager:
   - 
   - 
   - Walls
-  - 
-  - 
-  - 
+  - Player
+  - Sight
+  - World
   - 
   - 
   - 
@@ -44,9 +48,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Holder
+    uniqueID: 1741801079
+    locked: 0
   - name: PlayerShapeMask
     uniqueID: 2587822579
     locked: 0
   - name: PlayerLightMask
     uniqueID: 1669871279
+    locked: 0
+  - name: Diamond
+    uniqueID: 3506852959
     locked: 0

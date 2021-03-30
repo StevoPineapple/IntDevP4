@@ -8,6 +8,7 @@ public class scrFog : MonoBehaviour
     float camPosY;
     float camScale;
     float scrollSpeed = -0.005f;
+    float scaleRate = 1.1f;
     Renderer rend;
     void Start()
     {
@@ -27,7 +28,7 @@ public class scrFog : MonoBehaviour
         camPosX = Camera.main.transform.position.x;
         camPosY = Camera.main.transform.position.y;
         gameObject.transform.position = new Vector3(camPosX,camPosY,gameObject.transform.position.z);
-        float scale = Camera.main.orthographicSize/camScale;
+        float scale = Camera.main.orthographicSize/camScale*scaleRate;
         gameObject.transform.localScale = new Vector3(scale,scale,1.0f);
     }
 }
